@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Central Library - Multi-Book Recommendation Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  <style>
+    .bg-hero {
+      background: linear-gradient(rgba(15, 23, 42, 0.88), rgba(15, 23, 42, 0.88)),
+                  url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=1600&q=80');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+  <!-- Navigation Bar -->
+  <header class="bg-amber-950 text-amber-50 shadow-md sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <i class="fa-solid fa-book-open-reader text-2xl text-amber-400"></i>
+        <div>
+          <h1 class="font-bold text-lg tracking-wide">GACC LIBRARY GAMBHOI</h1>
+          <p class="text-xs text-amber-200">Library Book Recommendation Portal</p>
+        </div>
+      </div>
+      <button onclick="toggleAdminModal()" class="bg-amber-800 hover:bg-amber-700 px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-xs transition">
+        <i class="fa-solid fa-lock"></i> Admin Portal
+      </button>
+    </div>
+  </header>
+
+  <!-- Banner -->
+  <section class="bg-hero text-white py-10 px-4 text-center">
+    <div class="max-w-3xl mx-auto">
+      <h2 class="text-3xl font-extrabold mb-2">Pustak Recommendation Form</h2>
+      <p class="text-slate-300 text-sm md:text-base">
+        તમારી વિગતો એક જ વાર ભરીને તમે એક કે તેથી વધુ પુસ્તકો, તેની સંખ્યા (No. of Copies) અને અંદાજિત કિંમત સાથે રેકમેન્ડ કરી શકો છો.
+      </p>
+    </div>
+  </section>
+
+  <!-- Main Form -->
+  <main class="max-w-4xl mx-auto w-full px-4 -mt-6 mb-12">
+    <div class="bg-white rounded-2xl shadow-xl border border-slate-100 p-6 md:p-8">
+      <form id="recommendationForm" onsubmit="handleFormSubmit(event)" class="space-y-6">
+        
+        <div class="border-b pb-3">
+          <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-user-circle text-amber-700"></i> Recommender Details
+          </h3>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1">Academic Year *</label>
+            <select required id="academicYear" class="w-full border rounded-lg px-3 py-2 bg-slate-50 focus:ring-2 focus:ring-amber-500 outline-none">
+              <option value="2026-2027" selected>2026 - 2027</option>
+              <option value="2025-2026">2025 - 2026</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1">User Type *</label>
+            <select required id="userType" onchange="handleUserTypeChange()" class="w-full border rounded-lg px-3 py-2 bg-slate-50 focus:ring-2 focus:ring-amber-500 outline-none">
+              <option value="Student" selected>Student</option>
+              <option value="Staff">Faculty / Staff Member</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1">Puru Naam (Full Name) *</label>
+            <input type="text" required id="fullName" placeholder="દા.ત. Anjali Sharma" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-amber-500 outline-none" />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1">Email Address *</label>
+            <input type="email" required id="userEmail" placeholder="દા.ત. anjali@college.edu" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-amber-500 outline-none" />
+          </div>
+        </div>
+
+        <!-- Staff mate Department Section -->
+        <div id="staffDeptBox">
+          <label class="block text-sm font-semibold text-slate-700 mb-1">Department / Faculty Name *</label>
+          <input type="text" id="staffDepartment" placeholder="દા.ત. Department of Commerce / Gujarati / English" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-amber-500 outline-none" />
+        </div>
+
+        <!-- Student Section (Faculty/Dept + B.A./B.Com + Sem + Roll No) -->
+        <div id="studentFields" class="bg-amber-50/70 border border-amber-200/80 rounded-xl p-4 space-y-4">
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Course / Stream *</label>
+              <select id="course" class="w-full border rounded-lg px-2.5 py-1.5 bg-white text-sm font-medium focus:ring-2 focus:ring-amber-500 outline-none">
+                <option value="B.A.">B.A.</option>
+                <option value="B.Com">B.Com</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Semester *</label>
+              <select id="semester" class="w-full border rounded-lg px-2.5 py-1.5 bg-white text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                <option value="Sem 1">Sem 1</option>
+                <option value="Sem 2">Sem 2</option>
+                <option value="Sem 3">Sem 3</option>
+                <option value="Sem 4">Sem 4</option>
+                <option value="Sem 5">Sem 5</option>
+                <option value="Sem 6">Sem 6</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Roll Number *</label>
+              <input type="text" id="rollNo" placeholder="દા.ત. 26COM042" class="w-full border rounded-lg px-2.5 py-1.5 bg-white text-sm focus:ring-2 focus:ring-amber-500 outline-none" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic Book Add Section -->
+        <div class="border-t pt-6 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+              <i class="fa-solid fa-book text-amber-700"></i> પુસ્તકોની વિગત (Books to Recommend)
+            </h3>
+            <span class="text-xs bg-amber-100 text-amber-800 font-semibold px-2.5 py-1 rounded-full">
+              કુલ પુસ્તક: <span id="bookCount">1</span>
+            </span>
+          </div>
+
+          <div id="booksContainer" class="space-y-4"></div>
+
+          <button type="button" onclick="addBookCard()" class="w-full border-2 border-dashed border-amber-600 text-amber-800 hover:bg-amber-50 py-2.5 rounded-xl font-semibold flex items-center justify-center gap-2 text-sm transition">
+            <i class="fa-solid fa-plus-circle"></i> + બીજું પુસ્તક ઉમેરો (Add Another Book)
+          </button>
+        </div>
+
+        <button id="submitBtn" type="submit" class="w-full bg-amber-700 hover:bg-amber-800 text-white font-semibold py-3 rounded-lg shadow transition flex items-center justify-center gap-2 cursor-pointer mt-6">
+          <i class="fa-solid fa-paper-plane"></i> Form Submit Karo (Google Sheets ma Save thashe)
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <!-- Admin Modal -->
+  <div id="adminModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl max-w-5xl w-full p-6 max-h-[90vh] flex flex-col">
+      <div class="flex justify-between items-center pb-4 border-b">
+        <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-shield text-amber-700"></i> Admin View
+        </h3>
+        <button onclick="toggleAdminModal()" class="text-slate-400 hover:text-slate-600 text-2xl font-bold">&times;</button>
+      </div>
+      <div id="adminAuthBox" class="py-8 text-center max-w-sm mx-auto">
+        <p class="text-sm text-slate-600 mb-4">Admin Passcode enter karo:</p>
+        <div class="flex gap-2">
+          <input type="password" id="adminPassInput" placeholder="Passcode (Default: admin123)" class="border rounded-lg px-3 py-2 w-full outline-none focus:ring-2 focus:ring-amber-500" />
+          <button onclick="authenticateAdmin()" class="bg-amber-700 text-white px-4 py-2 rounded-lg font-medium hover:bg-amber-800">Verify</button>
+        </div>
+        <p id="authError" class="text-xs text-red-500 mt-2 hidden">ખોટો Passcode!</p>
+      </div>
+
+      <div id="adminDataTable" class="hidden overflow-auto mt-4 flex-1">
+        <div class="mb-3 flex justify-between items-center text-sm">
+          <span class="text-slate-500">Live Entries:</span>
+          <a href="https://docs.google.com/spreadsheets/d/17fKRGu8hSPqgBE2DHdrMlFaSa6xqkkY2DMO62i8V8TY/edit" target="_blank" class="text-amber-700 font-semibold hover:underline flex items-center gap-1">
+            Google Drive Sheet ખોલો <i class="fa-solid fa-external-link text-xs"></i>
+          </a>
+        </div>
+        <table class="w-full text-xs text-left border">
+          <thead class="bg-slate-100 text-slate-700 border-b">
+            <tr>
+              <th class="p-2 border-r">Date</th>
+              <th class="p-2 border-r">Type</th>
+              <th class="p-2 border-r">Name</th>
+              <th class="p-2 border-r">Faculty / Dept</th>
+              <th class="p-2 border-r">Book Title</th>
+              <th class="p-2 border-r">Copies</th>
+              <th class="p-2 border-r">Price (₹)</th>
+              <th class="p-2">Publisher</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // તમારો Apps Script Web App URL અહીં પેસ્ટ કરો:
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxgqjDhGGTA3uGTM1HTfCBy_NN3ib4A9Lt4ZPSRmgZh_-v10OvKcz2Gt45_XvkAboijbg/exec";
+
+    let bookCounter = 0;
+
+    function addBookCard() {
+      bookCounter++;
+      const container = document.getElementById('booksContainer');
+      const card = document.createElement('div');
+      card.id = `book-card-${bookCounter}`;
+      card.className = "book-entry bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3";
+
+      card.innerHTML = `
+        <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+          <span class="font-bold text-xs text-amber-900 bg-amber-100 px-2 py-0.5 rounded book-badge">Book #1</span>
+          <button type="button" onclick="removeBookCard(${bookCounter})" class="remove-btn text-xs text-red-500 hover:text-red-700">
+            <i class="fa-solid fa-trash"></i> કાઢી નાખો (Remove)
+          </button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Book Name / Title *</label>
+            <input type="text" required class="book-title w-full border rounded-lg px-3 py-1.5 bg-white text-sm outline-none" placeholder="દા.ત. Financial Accounting" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Author Name *</label>
+            <input type="text" required class="book-author w-full border rounded-lg px-3 py-1.5 bg-white text-sm outline-none" placeholder="દા.ત. Dr. P. C. Tulsian" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Publisher Name *</label>
+            <input type="text" required class="book-publisher w-full border rounded-lg px-3 py-1.5 bg-white text-sm outline-none" placeholder="દા.ત. S. Chand" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">No. of Books / Copies *</label>
+            <input type="number" required min="1" value="1" class="book-copies w-full border rounded-lg px-3 py-1.5 bg-white text-sm outline-none font-bold text-amber-900" placeholder="દા.ત. 2" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Estimated Price (₹) *</label>
+            <input type="number" required min="0" step="1" class="book-price w-full border rounded-lg px-3 py-1.5 bg-white text-sm outline-none font-bold text-emerald-800" placeholder="દા.ત. 450" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">ISBN / Edition (Optional)</label>
+            <input type="text" class="book-isbn w-full border rounded-lg px-3 py-1.5 bg-white text-sm outline-none" placeholder="દા.ત. 978-81219" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Remarks / કારણ</label>
+            <input type="text" class="book-remarks w-full border rounded-lg px-3 py-1.5 bg-white text-sm outline-none" placeholder="દા.ત. Syllabus reference માટે" />
+          </div>
+        </div>
+      `;
+      container.appendChild(card);
+      updateIndices();
+    }
+
+    function removeBookCard(id) {
+      const card = document.getElementById(`book-card-${id}`);
+      if (card) {
+        card.remove();
+        updateIndices();
+      }
+    }
+
+    function updateIndices() {
+      const cards = document.querySelectorAll('.book-entry');
+      document.getElementById('bookCount').textContent = cards.length;
+      cards.forEach((c, idx) => {
+        c.querySelector('.book-badge').textContent = `Book #${idx + 1}`;
+        const btn = c.querySelector('.remove-btn');
+        btn.style.display = cards.length === 1 ? 'none' : 'inline-block';
+      });
+    }
+
+    addBookCard();
+
+    function handleUserTypeChange() {
+      const type = document.getElementById('userType').value;
+      const studentBox = document.getElementById('studentFields');
+      const staffBox = document.getElementById('staffDeptBox');
+      const staffDeptInput = document.getElementById('staffDepartment');
+      const studentDeptInput = document.getElementById('studentDepartment');
+      const rollInput = document.getElementById('rollNo');
+
+      if (type === 'Student') {
+        studentBox.style.display = 'block';
+        staffBox.style.display = 'none';
+        studentDeptInput.required = true;
+        rollInput.required = true;
+        staffDeptInput.required = false;
+      } else {
+        studentBox.style.display = 'none';
+        staffBox.style.display = 'block';
+        studentDeptInput.required = false;
+        rollInput.required = false;
+        staffDeptInput.required = true;
+      }
+    }
+    handleUserTypeChange();
+
+    async function handleFormSubmit(e) {
+      e.preventDefault();
+      const submitBtn = document.getElementById('submitBtn');
+      const originalText = submitBtn.innerHTML;
+
+      const cards = document.querySelectorAll('.book-entry');
+      const books = [];
+      cards.forEach(card => {
+        books.push({
+          title: card.querySelector('.book-title').value.trim(),
+          author: card.querySelector('.book-author').value.trim(),
+          publisher: card.querySelector('.book-publisher').value.trim(),
+          copies: card.querySelector('.book-copies').value.trim() || '1',
+          price: card.querySelector('.book-price').value.trim() || '0',
+          isbn: card.querySelector('.book-isbn').value.trim() || 'N/A',
+          remarks: card.querySelector('.book-remarks').value.trim() || 'N/A'
+        });
+      });
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Google Sheets માં સેવ થઈ રહ્યું છે...';
+
+      const userType = document.getElementById('userType').value;
+      const department = userType === 'Student' 
+        ? document.getElementById('studentDepartment').value.trim() 
+        : document.getElementById('staffDepartment').value.trim();
+
+      const payload = {
+        year: document.getElementById('academicYear').value,
+        type: userType,
+        name: document.getElementById('fullName').value.trim(),
+        email: document.getElementById('userEmail').value.trim(),
+        department: department,
+        course: userType === 'Student' ? document.getElementById('course').value : 'N/A',
+        semester: userType === 'Student' ? document.getElementById('semester').value : 'N/A',
+        rollNo: userType === 'Student' ? document.getElementById('rollNo').value.trim() : 'N/A',
+        books: books
+      };
+
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+
+        const resJson = await res.json();
+        if (resJson.status === 'success') {
+          // Admin cache ma save karvu
+          const existing = JSON.parse(localStorage.getItem('lib_recs') || '[]');
+          books.forEach(b => {
+            existing.unshift({
+              date: new Date().toLocaleDateString(),
+              type: payload.type,
+              name: payload.name,
+              dept: payload.department,
+              title: b.title,
+              copies: b.copies,
+              price: b.price,
+              publisher: b.publisher
+            });
+          });
+          localStorage.setItem('lib_recs', JSON.stringify(existing));
+
+          alert(`સફળતા! ${books.length} પુસ્તકો સંખ્યા અને કિંમત સાથે Google Sheet માં સેવ થઈ ગયા છે અને ${payload.email} પર ઇમેઇલ મોકલી દેવાયો છે.`);
+          document.getElementById('recommendationForm').reset();
+          document.getElementById('booksContainer').innerHTML = '';
+          bookCounter = 0;
+          addBookCard();
+          handleUserTypeChange();
+        } else {
+          throw new Error(resJson.message);
+        }
+      } catch (err) {
+        console.error(err);
+        alert('સબમિશન કરવામાં ભૂલ આવી. કૃપા કરીને SCRIPT_URL ચકાસો.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+      }
+    }
+
+    function toggleAdminModal() {
+      const modal = document.getElementById('adminModal');
+      modal.classList.toggle('hidden');
+      modal.classList.toggle('flex');
+    }
+
+    function authenticateAdmin() {
+      if (document.getElementById('adminPassInput').value === 'admin123') {
+        document.getElementById('adminAuthBox').classList.add('hidden');
+        document.getElementById('adminDataTable').classList.remove('hidden');
+        renderAdminTable();
+      } else {
+        document.getElementById('authError').classList.remove('hidden');
+      }
+    }
+
+    function renderAdminTable() {
+      const data = JSON.parse(localStorage.getItem('lib_recs') || '[]');
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+      if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="p-3 text-center text-slate-400">હજુ સુધી કોઈ એન્ટ્રી નથી.</td></tr>';
+        return;
+      }
+      data.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.className = "border-b";
+        tr.innerHTML = `
+          <td class="p-2 border-r">\${r.date}</td>
+          <td class="p-2 border-r"><span class="px-1.5 py-0.5 rounded text-[10px] \${r.type === 'Student' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'}">\${r.type}</span></td>
+          <td class="p-2 border-r font-medium">\${r.name}</td>
+          <td class="p-2 border-r">\${r.dept || '-'}</td>
+          <td class="p-2 border-r font-medium text-slate-900">\${r.title}</td>
+          <td class="p-2 border-r font-bold text-center">\${r.copies || 1}</td>
+          <td class="p-2 border-r text-emerald-700 font-bold">₹\${r.price || 0}</td>
+          <td class="p-2">\${r.publisher}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+  </script>
+</body>
+</html>
